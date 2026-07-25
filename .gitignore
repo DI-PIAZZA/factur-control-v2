@@ -1,0 +1,15 @@
+node_modules/
+.next/
+.env.local
+.env.*.local
+.vercel/
+*.tsbuildinfo
+.DS_Store
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.eslintcache

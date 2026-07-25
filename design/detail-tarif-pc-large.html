@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>factur-control — Détail Tarif ROSSI 84</title>
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #F3F4F6;
+    color: #1F2937;
+    padding: 24px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1600px; margin: 0 auto; }
+  .app-window {
+    background: #1D4ED8;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  }
+  .header {
+    background: #1E40AF;
+    padding: 14px 22px;
+    border-bottom: 1px solid #1E3A8A;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo-zone { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 32px; height: 32px;
+    background: #E85A00;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 600; font-size: 14px;
+  }
+  .app-name { font-weight: 500; font-size: 15px; color: white; }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .quota { font-size: 13px; color: #DBEAFE; }
+  .avatar {
+    width: 32px; height: 32px;
+    background: #E85A00;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 600; font-size: 12px;
+  }
+  .breadcrumb {
+    padding: 14px 22px;
+    background: #1E40AF;
+    border-bottom: 1px solid #1E3A8A;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px;
+  }
+  .breadcrumb a { color: #DBEAFE; text-decoration: none; }
+  .breadcrumb a:hover { color: white; }
+  .breadcrumb .chevron { font-size: 12px; color: #93C5FD; }
+  .breadcrumb .current { color: white; font-weight: 500; }
+  .content { padding: 18px; }
+  .card {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 14px;
+  }
+  .info-bar {
+    padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .info-left h2 {
+    margin: 0; font-size: 17px; font-weight: 500; color: #1F2937;
+  }
+  .info-left .title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .badge-active {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #16A34A; color: white; font-size: 11px;
+    padding: 3px 10px; border-radius: 12px; font-weight: 500;
+  }
+  .info-left p { margin: 0; font-size: 12px; color: #6B7280; }
+  .actions { display: flex; gap: 8px; }
+  .btn {
+    background: white; color: #1F2937;
+    border: 1px solid #D1D5DB;
+    padding: 8px 14px; border-radius: 6px;
+    font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: #F9FAFB; border-color: #9CA3AF; }
+  .btn-primary {
+    background: #E85A00; color: white; border-color: #E85A00;
+  }
+  .btn-primary:hover { background: #C44A00; border-color: #C44A00; }
+  .search-bar {
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .search-input-wrapper {
+    flex: 1; display: flex; align-items: center;
+    background: #F9FAFB; border: 1px solid #E5E7EB;
+    border-radius: 6px; padding: 0 14px;
+  }
+  .search-input-wrapper input {
+    flex: 1; padding: 8px 0; border: none;
+    font-size: 13px; background: transparent;
+    outline: none; color: #1F2937;
+  }
+  .search-input-wrapper i { font-size: 16px; color: #6B7280; margin-right: 8px; }
+  .filter-select {
+    padding: 8px 12px;
+    border: 1px solid #E5E7EB; border-radius: 6px;
+    background: white; font-size: 13px; color: #1F2937;
+    cursor: pointer;
+  }
+  .category-header {
+    padding: 12px 16px;
+    background: #FAECE7;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid #E5E7EB;
+    cursor: pointer;
+  }
+  .category-header .chevron { font-size: 18px; color: #E85A00; }
+  .category-header span.name { font-size: 14px; font-weight: 500; color: #1F2937; }
+  .category-header span.count {
+    font-size: 11px; color: #993C1D;
+    background: white; padding: 3px 9px;
+    border-radius: 10px; font-weight: 500;
+  }
+  .table-wrapper { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 1280px;
+  }
+  thead { background: #F3F4F6; }
+  thead tr.main { border-bottom: 2px solid #9CA3AF; }
+  thead tr.sub { background: #F9FAFB; border-bottom: 1px solid #E5E7EB; }
+  thead th {
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 500;
+    color: #4B5563;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    vertical-align: middle;
+  }
+  thead th.designation { text-align: left; }
+  thead th.right { text-align: right; }
+  /* Color zones */
+  thead th.remise-fourn { background: #FCEBEB; color: #B91C1C; }
+  thead th.net-facture {
+    background: #EAF3DE; color: #16A34A;
+    border-right: 2px solid #16A34A;
+  }
+  thead th.gratuite { background: #FEF3C7; color: #B45309; }
+  thead th.rfa-prod { background: #EDE9FE; color: #6D28D9; }
+  thead th.rfa-fourn {
+    background: #EEF2FF; color: #4338CA;
+    border-right: 2px solid #E85A00;
+  }
+  thead th.net-net { background: #FAECE7; color: #E85A00; }
+  thead th.sep-left { border-left: 1px solid #E5E7EB; }
+  thead th.sep-right { border-right: 1px solid #E5E7EB; }
+  /* Subheader cells */
+  thead tr.sub th { padding: 5px 4px; font-size: 9px; color: #6B7280; }
+  /* Body */
+  tbody tr {
+    border-bottom: 1px solid #E5E7EB;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  tbody tr:hover { background: #F9FAFB; }
+  tbody tr.selected {
+    background: #FAECE7;
+    border-left: 3px solid #E85A00;
+  }
+  tbody tr.selected:hover { background: #F8DDD0; }
+  tbody td {
+    padding: 11px 8px;
+    font-size: 12px;
+    color: #1F2937;
+    vertical-align: middle;
+  }
+  td.ref {
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+  }
+  td.designation { font-size: 13px; }
+  td.unit { text-align: center; color: #6B7280; font-size: 12px; }
+  td.right { text-align: right; }
+  td.center { text-align: center; }
+  td.bold { font-weight: 500; }
+  td.empty { color: #9CA3AF; }
+  /* Color zones for body */
+  td.remise-fourn { background: #FCEBEB; color: #B91C1C; font-weight: 500; }
+  td.net-facture {
+    background: #F0FDF4; color: #16A34A; font-weight: 500;
+    border-right: 2px solid #16A34A;
+  }
+  td.gratuite { background: #FFFBEB; color: #B45309; font-weight: 500; }
+  td.rfa-prod { background: #F5F3FF; color: #6D28D9; font-weight: 500; }
+  td.rfa-fourn {
+    background: #F5F7FF; color: #4338CA; font-weight: 500;
+    border-right: 2px solid #E85A00;
+  }
+  td.net-net { background: #FFFBF7; color: #E85A00; font-weight: 500; }
+  td.sep-left { border-left: 1px solid #E5E7EB; }
+  td.sep-right { border-right: 1px solid #E5E7EB; }
+  /* Selected row keeps colored cells subtle */
+  tr.selected td.net-facture { background: #DCFCE7; }
+  tr.selected td.net-net { background: #FED7AA; }
+  tr.selected td.remise-fourn { background: rgba(252, 235, 235, 0.7); }
+  tr.selected td.gratuite { background: rgba(254, 243, 199, 0.5); }
+  tr.selected td.rfa-prod { background: rgba(237, 233, 254, 0.5); }
+  tr.selected td.rfa-fourn { background: rgba(238, 242, 255, 0.5); }
+  /* Source badge */
+  .src-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: #DBEAFE; color: #1D4ED8;
+    font-size: 10px; padding: 2px 8px;
+    border-radius: 10px; font-weight: 500;
+  }
+  /* Table footer */
+  .table-footer {
+    padding: 12px 16px;
+    background: #F9FAFB;
+    text-align: center;
+    font-size: 12px;
+    color: #6B7280;
+    border-top: 1px solid #E5E7EB;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="app-window">
+
+<div class="header">
+<div class="logo-zone">
+<div class="logo">FC</div>
+<span class="app-name">factur-control</span>
+</div>
+<div class="header-right">
+<span class="quota">87 / 500 factures</span>
+<div class="avatar">SD</div>
+</div>
+</div>
+
+<div class="breadcrumb">
+<a href="#"><i class="ti ti-home"></i> Accueil</a>
+<i class="ti ti-chevron-right chevron"></i>
+<a href="#">Fournisseurs</a>
+<i class="ti ti-chevron-right chevron"></i>
+<a href="#">ROSSI 84</a>
+<i class="ti ti-chevron-right chevron"></i>
+<span class="current">Tarif 2026</span>
+</div>
+
+<div class="content">
+
+<div class="card">
+<div class="info-bar">
+<div class="info-left">
+<div class="title-row">
+<h2>Tarif 2026 — ROSSI 84</h2>
+<span class="badge-active"><i class="ti ti-check"></i> Actif</span>
+</div>
+<p>136 lignes · 3 documents source · Valide du 01/01/2026 au 31/12/2026</p>
+</div>
+<div class="actions">
+<button class="btn"><i class="ti ti-files"></i> Documents (3)</button>
+<button class="btn"><i class="ti ti-columns-3"></i> Colonnes</button>
+<button class="btn"><i class="ti ti-file-export"></i> Exporter</button>
+</div>
+</div>
+</div>
+
+<div class="card">
+<div class="search-bar">
+<div class="search-input-wrapper">
+<i class="ti ti-search"></i>
+<input type="text" placeholder="Rechercher une référence, désignation...">
+</div>
+<select class="filter-select">
+<option>Toutes catégories</option>
+<option>Béton</option>
+<option>Ferraillage</option>
+<option>Granulats</option>
+<option>Liants</option>
+<option>Services</option>
+</select>
+<select class="filter-select">
+<option>Toutes sources</option>
+<option>PDF tarif uniquement</option>
+<option>Avec accord producteur</option>
+<option>Avec RFA fournisseur</option>
+</select>
+</div>
+</div>
+
+<div class="card">
+
+<div class="category-header">
+<i class="ti ti-chevron-down chevron"></i>
+<span class="name">Béton</span>
+<span class="count">28 lignes</span>
+</div>
+
+<div class="table-wrapper">
+<table>
+<thead>
+<tr class="main">
+<th rowspan="2">Réf.</th>
+<th rowspan="2" class="designation">Désignation</th>
+<th rowspan="2">Unité</th>
+<th rowspan="2" class="right">Tarif<br>base</th>
+<th colspan="2" class="remise-fourn sep-left sep-right">Remise<br>fournisseur</th>
+<th rowspan="2" class="right net-facture">Net<br>facture</th>
+<th rowspan="2" class="gratuite">Gratuité</th>
+<th colspan="2" class="rfa-prod sep-right">RFA<br>Producteur</th>
+<th colspan="2" class="rfa-fourn sep-right">RFA<br>Fournisseur</th>
+<th rowspan="2" class="right net-net">Net Net</th>
+<th rowspan="2">Src</th>
+</tr>
+<tr class="sub">
+<th class="remise-fourn sep-left">%</th>
+<th class="remise-fourn sep-right">€</th>
+<th class="rfa-prod">%</th>
+<th class="rfa-prod sep-right">€</th>
+<th class="rfa-fourn">%</th>
+<th class="rfa-fourn sep-right">€</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+<td class="ref">BV-300</td>
+<td class="designation">Béton vibré C25/30 dosé 300kg</td>
+<td class="unit">m³</td>
+<td class="right bold">95,00 €</td>
+<td class="remise-fourn center sep-left">15%</td>
+<td class="remise-fourn center empty sep-right">—</td>
+<td class="right net-facture">80,75 €</td>
+<td class="center empty gratuite">—</td>
+<td class="center empty rfa-prod">—</td>
+<td class="center empty rfa-prod sep-right">—</td>
+<td class="center empty rfa-fourn">—</td>
+<td class="center empty rfa-fourn sep-right">—</td>
+<td class="right net-net">80,75 €</td>
+<td class="center"><span class="src-badge"><i class="ti ti-file-text"></i>1</span></td>
+</tr>
+
+<tr class="selected">
+<td class="ref bold">BV-450</td>
+<td class="designation bold">Béton vibré C40/50 dosé 450kg</td>
+<td class="unit">m³</td>
+<td class="right bold">112,00 €</td>
+<td class="remise-fourn center sep-left">12%</td>
+<td class="remise-fourn center sep-right">3,36 €</td>
+<td class="right net-facture">95,20 €</td>
+<td class="center gratuite" title="Acheter 50 → 1 gratuit">50+1</td>
+<td class="center rfa-prod">3%</td>
+<td class="center rfa-prod sep-right">1,00 €</td>
+<td class="center rfa-fourn">2%</td>
+<td class="center empty rfa-fourn sep-right">—</td>
+<td class="right net-net">88,54 €</td>
+<td class="center"><span class="src-badge"><i class="ti ti-files"></i>2</span></td>
+</tr>
+
+<tr>
+<td class="ref">PV-200</td>
+<td class="designation">Parpaing creux 200mm</td>
+<td class="unit">u</td>
+<td class="right bold">2,30 €</td>
+<td class="remise-fourn center empty sep-left">—</td>
+<td class="remise-fourn center sep-right">0,35 €</td>
+<td class="right net-facture">1,95 €</td>
+<td class="center gratuite" title="Acheter 10 → 1 gratuit">10+1</td>
+<td class="center empty rfa-prod">—</td>
+<td class="center empty rfa-prod sep-right">—</td>
+<td class="center empty rfa-fourn">—</td>
+<td class="center empty rfa-fourn sep-right">—</td>
+<td class="right net-net">1,77 €</td>
+<td class="center"><span class="src-badge"><i class="ti ti-files"></i>2</span></td>
+</tr>
+
+<tr>
+<td class="ref">CIM-CP</td>
+<td class="designation">Ciment CPJ 35kg</td>
+<td class="unit">u</td>
+<td class="right bold">10,40 €</td>
+<td class="remise-fourn center sep-left">10%</td>
+<td class="remise-fourn center sep-right">0,50 €</td>
+<td class="right net-facture">8,86 €</td>
+<td class="center gratuite" title="Acheter 20 → 2 gratuits">20+2</td>
+<td class="center rfa-prod">5%</td>
+<td class="center rfa-prod sep-right">0,20 €</td>
+<td class="center rfa-fourn">1,5%</td>
+<td class="center rfa-fourn sep-right">0,05 €</td>
+<td class="right net-net">7,82 €</td>
+<td class="center"><span class="src-badge"><i class="ti ti-files"></i>3</span></td>
+</tr>
+
+<tr>
+<td class="ref">BV-350</td>
+<td class="designation">Béton vibré C30/37 dosé 350kg</td>
+<td class="unit">m³</td>
+<td class="right bold">103,00 €</td>
+<td class="remise-fourn center sep-left">14%</td>
+<td class="remise-fourn center empty sep-right">—</td>
+<td class="right net-facture">88,58 €</td>
+<td class="center empty gratuite">—</td>
+<td class="center rfa-prod">2%</td>
+<td class="center empty rfa-prod sep-right">—</td>
+<td class="center empty rfa-fourn">—</td>
+<td class="center empty rfa-fourn sep-right">—</td>
+<td class="right net-net">86,81 €</td>
+<td class="center"><span class="src-badge"><i class="ti ti-files"></i>2</span></td>
+</tr>
+
+<tr>
+<td class="ref">DAL-PR</td>
+<td class="designation">Dalle pleine béton 20cm</td>
+<td class="unit">m²</td>
+<td class="right bold">38,00 €</td>
+<td class="remise-fourn center sep-left">10%</td>
+<td class="remise-fourn center sep-right">1,00 €</td>
+<td class="right net-facture">33,20 €</td>
+<td class="center empty gratuite">—</td>
+<td class="center empty rfa-prod">—</td>
+<td class="center empty rfa-prod sep-right">—</td>
+<td class="center rfa-fourn">2%</td>
+<td class="center rfa-fourn sep-right">0,50 €</td>
+<td class="right net-net">32,03 €</td>
+<td class="center"><span class="src-badge"><i class="ti ti-files"></i>2</span></td>
+</tr>
+
+</tbody>
+</table>
+</div>
+
+<div class="table-footer">
++ 22 lignes supplémentaires dans cette catégorie
+</div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+</body>
+</html>

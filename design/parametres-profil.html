@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>factur-control — Paramètres</title>
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #F3F4F6;
+  color: #1F2937;
+  padding: 24px;
+}
+.container { max-width: 1400px; margin: 0 auto; }
+.app { background: #1D4ED8; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+
+.header {
+  background: #1E40AF;
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo {
+  width: 32px; height: 32px;
+  background: #E85A00;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 14px;
+}
+.app-name { font-weight: 500; font-size: 15px; color: white; }
+.header-right { display: flex; align-items: center; gap: 16px; }
+.quota { font-size: 13px; color: #DBEAFE; }
+.avatar {
+  width: 32px; height: 32px;
+  background: #E85A00;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 12px;
+}
+.breadcrumb {
+  padding: 14px 22px;
+  background: #1E40AF;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px;
+  border-top: 1px solid #1E3A8A;
+}
+.breadcrumb a { color: #DBEAFE; text-decoration: none; }
+.breadcrumb a:hover { color: white; }
+.breadcrumb .chevron { color: #93C5FD; }
+.breadcrumb .current { color: white; font-weight: 500; }
+
+.content {
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.sidebar {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  position: sticky;
+  top: 22px;
+}
+.sidebar-section {
+  margin: 8px 8px;
+  font-size: 9px;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+}
+.sidebar-section:first-child { margin-top: 0; }
+.sidebar a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  border-radius: 5px;
+  color: #6B7280;
+  font-size: 12.5px;
+  text-decoration: none;
+  margin-bottom: 2px;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.sidebar a:hover { background: #F9FAFB; color: #1F2937; }
+.sidebar a.active { background: #FAECE7; color: #E85A00; font-weight: 500; }
+.sidebar a i { font-size: 16px; flex-shrink: 0; }
+.sidebar a.disabled { color: #9CA3AF; cursor: not-allowed; }
+.sidebar a.disabled:hover { background: transparent; color: #9CA3AF; }
+.badge-v1 {
+  margin-left: auto;
+  font-size: 8px;
+  background: #E5E7EB;
+  color: #6B7280;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.main { display: flex; flex-direction: column; gap: 16px; }
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 24px 26px;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.card h2 {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1F2937;
+  margin: 0;
+}
+.card h2 i {
+  color: #1D4ED8;
+  margin-right: 8px;
+  vertical-align: -3px;
+  font-size: 20px;
+}
+.card-subtitle {
+  font-size: 12px;
+  color: #6B7280;
+  margin-bottom: 22px;
+}
+.card-meta {
+  font-size: 11px;
+  color: #6B7280;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.avatar-large {
+  width: 88px;
+  height: 88px;
+  background: #E85A00;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 500; font-size: 30px;
+  margin-bottom: 10px;
+}
+.btn-small {
+  background: white;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.btn-small:hover { background: #EFF6FF; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.field-full { grid-column: span 2; }
+.field label {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: #1F2937;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.field input, .field select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: 5px;
+  font-size: 13px;
+  color: #1F2937;
+  outline: none;
+  background: white;
+  transition: border-color 0.15s;
+}
+.field input:focus, .field select:focus { border-color: #1D4ED8; }
+.field-validated input {
+  border-color: #86EFAC;
+  background: #F0FDF4;
+  padding-right: 36px;
+}
+.field-wrapper { position: relative; }
+.field-check {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #16A34A;
+  font-size: 18px;
+}
+.field-help {
+  margin: 4px 0 0;
+  font-size: 10px;
+  color: #15803D;
+}
+.field-help i { font-size: 11px; vertical-align: -1px; }
+
+.address-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 110px;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.info-box {
+  margin-top: 16px;
+  padding: 14px;
+  background: #F0FDF4;
+  border: 1px solid #86EFAC;
+  border-radius: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.info-box i { font-size: 18px; color: #16A34A; flex-shrink: 0; margin-top: 1px; }
+.info-box .info-title { font-size: 12px; color: #15803D; font-weight: 500; margin-bottom: 3px; }
+.info-box .info-text { font-size: 12px; color: #15803D; line-height: 1.5; }
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+}
+.btn-cancel {
+  background: white;
+  color: #6B7280;
+  border: 1px solid #D1D5DB;
+}
+.btn-cancel:hover { background: #F9FAFB; }
+.btn-primary {
+  background: #E85A00;
+  color: white;
+}
+.btn-primary:hover { background: #C44A00; }
+
+/* Required indicator */
+.required { color: #DC2626; }
+
+@media (max-width: 900px) {
+  .content { grid-template-columns: 1fr; }
+  .profile-grid { grid-template-columns: 1fr; text-align: center; }
+  .avatar-large { margin: 0 auto 10px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .field-full { grid-column: span 1; }
+  .address-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="app">
+
+<div class="header">
+<div class="header-left">
+<div class="logo">FC</div>
+<span class="app-name">factur-control</span>
+</div>
+<div class="header-right">
+<span class="quota">87 / 500 factures</span>
+<div class="avatar">SD</div>
+</div>
+</div>
+
+<div class="breadcrumb">
+<a href="#"><i class="ti ti-home"></i> Accueil</a>
+<i class="ti ti-chevron-right chevron"></i>
+<span class="current">Paramètres</span>
+</div>
+
+<div class="content">
+
+<aside class="sidebar">
+
+<p class="sidebar-section">Compte</p>
+<a href="#" class="active">
+<i class="ti ti-user"></i> Profil
+</a>
+<a href="#">
+<i class="ti ti-building"></i> Société
+</a>
+<a href="#">
+<i class="ti ti-shield-lock"></i> Sécurité
+</a>
+
+<p class="sidebar-section">Préférences</p>
+<a href="#">
+<i class="ti ti-mail"></i> Mail &amp; Signature
+</a>
+<a href="#">
+<i class="ti ti-trending-up"></i> Rentabilité
+</a>
+<a href="#">
+<i class="ti ti-bell"></i> Notifications
+</a>
+
+<p class="sidebar-section">Abonnement</p>
+<a href="#">
+<i class="ti ti-credit-card"></i> Abonnement
+</a>
+<a href="#" class="disabled">
+<i class="ti ti-users"></i> Équipe
+<span class="badge-v1">V1</span>
+</a>
+
+</aside>
+
+<div class="main">
+
+<!-- PROFIL PERSONNEL -->
+<div class="card">
+<div class="card-header">
+<h2><i class="ti ti-user"></i>Profil personnel</h2>
+<span class="card-meta">Compte créé le 15 mars 2026</span>
+</div>
+<p class="card-subtitle">Vos informations personnelles utilisées dans l'application.</p>
+
+<div class="profile-grid">
+
+<div>
+<div class="avatar-large">SD</div>
+<button class="btn-small"><i class="ti ti-camera"></i> Changer</button>
+</div>
+
+<div class="form-grid">
+
+<div class="field">
+<label>Prénom <span class="required">*</span></label>
+<input type="text" value="Stéphano">
+</div>
+
+<div class="field">
+<label>Nom <span class="required">*</span></label>
+<input type="text" value="Di Piazza">
+</div>
+
+<div class="field field-validated">
+<label>E-mail <span class="required">*</span></label>
+<div class="field-wrapper">
+<input type="email" value="stephano.dipiazza@example.fr">
+<i class="ti ti-circle-check-filled field-check"></i>
+</div>
+<p class="field-help"><i class="ti ti-circle-check"></i> E-mail vérifié</p>
+</div>
+
+<div class="field">
+<label>Téléphone</label>
+<input type="tel" value="06 12 34 56 78">
+</div>
+
+<div class="field">
+<label>Fonction</label>
+<input type="text" value="Gérant">
+</div>
+
+<div class="field">
+<label>Langue</label>
+<select>
+<option>Français</option>
+<option>English (Bientôt)</option>
+</select>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SOCIÉTÉ -->
+<div class="card">
+<div class="card-header">
+<h2><i class="ti ti-building"></i>Société</h2>
+<button class="btn-small">
+<i class="ti ti-refresh"></i> Récupérer via SIREN
+</button>
+</div>
+<p class="card-subtitle">Informations légales de votre entreprise. Apparaîtront dans les mails d'avoir.</p>
+
+<div class="form-grid">
+
+<div class="field field-full">
+<label>Raison sociale <span class="required">*</span></label>
+<input type="text" value="DI PIAZZA SARL">
+</div>
+
+<div class="field field-validated">
+<label>SIREN <span class="required">*</span></label>
+<div class="field-wrapper">
+<input type="text" value="123 456 789" maxlength="11">
+<i class="ti ti-circle-check-filled field-check"></i>
+</div>
+<p class="field-help"><i class="ti ti-circle-check"></i> SIREN vérifié auprès de l'INSEE</p>
+</div>
+
+<div class="field">
+<label>N° TVA Intracom.</label>
+<input type="text" value="FR12345678901">
+</div>
+
+<div class="field">
+<label>Forme juridique</label>
+<select>
+<option>SARL</option>
+<option>SAS</option>
+<option>SASU</option>
+<option>EURL</option>
+<option>SA</option>
+<option>Auto-entrepreneur</option>
+<option>Autre</option>
+</select>
+</div>
+
+<div class="field">
+<label>Secteur d'activité</label>
+<select>
+<option>BTP / Bâtiment</option>
+<option>Restauration</option>
+<option>Distribution</option>
+<option>Autre</option>
+</select>
+</div>
+
+<div class="field field-full">
+<label>Adresse <span class="required">*</span></label>
+<input type="text" value="42 Avenue des Pins">
+<div class="address-row">
+<input type="text" value="84000" placeholder="Code postal">
+<input type="text" value="Avignon" placeholder="Ville">
+<select>
+<option>France</option>
+<option>Belgique</option>
+<option>Suisse</option>
+</select>
+</div>
+</div>
+
+</div>
+
+<div class="info-box">
+<i class="ti ti-info-circle"></i>
+<div>
+<p class="info-title">Récupération automatique depuis l'INSEE</p>
+<p class="info-text">Saisissez votre SIREN (9 chiffres) et cliquez sur "Récupérer via SIREN" en haut à droite pour pré-remplir automatiquement raison sociale, adresse, forme juridique, TVA et code APE depuis la base SIRENE de l'INSEE.</p>
+</div>
+</div>
+
+</div>
+
+<!-- ACTIONS -->
+<div class="actions">
+<button class="btn btn-cancel">Annuler</button>
+<button class="btn btn-primary">
+<i class="ti ti-device-floppy"></i> Enregistrer
+</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+</body>
+</html>

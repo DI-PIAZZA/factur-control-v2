@@ -1,0 +1,497 @@
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+
+interface TarifLine {
+  ref_article: string;
+  label: string;
+  unit_price: number;
+  unit: string;
+  remise_fournisseur_valeur?: number;
+  remise_fournisseur_pct?: number;
+  remise_producteur_valeur?: number;
+  remise_producteur_pct?: number;
+}
+
+interface ClaudeResponse {
+  fournisseur_detecte: string;
+  coherent: boolean;
+  colonnes_prix: string[];
+  lignes: TarifLine[];
+}
+
+// Convertit un fichier Excel en texte tabulaire via Python (standard lib, sans pip)
+async function excelToText(buffer: ArrayBuffer): Promise<string> {
+  const { spawnSync } = await import("child_process");
+
+  const pythonScript = `
+import sys, zipfile, xml.etree.ElementTree as ET, io
+
+data = sys.stdin.buffer.read()
+try:
+    zf = zipfile.ZipFile(io.BytesIO(data))
+except Exception as e:
+    print(f"ERREUR ZIP: {e}", file=sys.stderr)
+    sys.exit(1)
+
+NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
+
+# Shared strings
+shared_strings = []
+try:
+    ss = ET.fromstring(zf.read('xl/sharedStrings.xml'))
+    for si in ss.findall(f'{{{NS}}}si'):
+        parts = si.findall(f'.//{{{NS}}}t')
+        shared_strings.append(''.join(p.text or '' for p in parts))
+except:
+    pass
+
+# Feuilles
+try:
+    wb = ET.fromstring(zf.read('xl/workbook.xml'))
+    sheets = wb.findall(f'.//{{{NS}}}sheet')
+except:
+    sheets = []
+
+results = []
+for i, sheet in enumerate(sheets):
+    name = sheet.get('name', f'Feuille{i+1}')
+    try:
+        sd = ET.fromstring(zf.read(f'xl/worksheets/sheet{i+1}.xml'))
+    except:
+        continue
+    rows = []
+    for row in sd.findall(f'.//{{{NS}}}row'):
+        cells = []
+        for c in row.findall(f'{{{NS}}}c'):
+            t = c.get('t', '')
+            v = c.find(f'{{{NS}}}v')
+            if v is None or v.text is None:
+                cells.append('')
+            elif t == 's':
+                idx = int(v.text)
+                cells.append(shared_strings[idx] if idx < len(shared_strings) else '')
+            elif t == 'inlineStr':
+                is_el = c.find(f'.//{{{NS}}}t')
+                cells.append(is_el.text if is_el is not None else '')
+            else:
+                cells.append(v.text)
+        if any(cells):
+            rows.append('\\t'.join(cells))
+    if rows:
+        results.append(f'=== {name} ===\\n' + '\\n'.join(rows))
+
+print('\\n\\n'.join(results))
+`;
+
+  const result = spawnSync("python", ["-c", pythonScript], {
+    input: Buffer.from(buffer),
+    maxBuffer: 50 * 1024 * 1024,
+    timeout: 30000,
+  });
+
+  if (result.error) {
+    // Essayer python3 si python n'est pas dans le PATH
+    const result3 = spawnSync("python3", ["-c", pythonScript], {
+      input: Buffer.from(buffer),
+      maxBuffer: 50 * 1024 * 1024,
+      timeout: 30000,
+    });
+    if (result3.error || result3.status !== 0) {
+      throw new Error("Python non disponible pour lire le fichier Excel");
+    }
+    return result3.stdout.toString("utf-8").trim();
+  }
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr?.toString() || "Erreur lecture Excel");
+  }
+
+  return result.stdout.toString("utf-8").trim();
+}
+
+function isExcel(file: File): boolean {
+  const excelExtensions = [".xlsx", ".xls", ".xlsm"];
+  const ext = file.name.toLowerCase();
+  return excelExtensions.some((e) => ext.endsWith(e));
+}
+
+// Extrait les en-têtes de colonnes directement depuis le texte Excel
+// (plus fiable et moins coûteux que de demander à Claude)
+function extractColumnsFromExcel(tableText: string): string[] {
+  const lines = tableText.split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('===') || trimmed === '') continue;
+    // Première ligne de données = en-têtes
+    return trimmed.split('\t').map(c => c.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+// Convertit un PDF en texte via Python (pypdf, auto-installé si absent)
+// Retourne { text, pageCount }
+async function pdfToText(buffer: ArrayBuffer): Promise<{ text: string; pageCount: number }> {
+  const { spawnSync } = await import("child_process");
+
+  const pythonScript = `
+import sys, io, subprocess
+
+data = sys.stdin.buffer.read()
+
+# Auto-installer pypdf si absent
+try:
+    from pypdf import PdfReader
+except ImportError:
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "pypdf", "--break-system-packages", "-q"],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
+    from pypdf import PdfReader
+
+reader = PdfReader(io.BytesIO(data))
+page_count = len(reader.pages)
+
+# Écrire le nombre de pages sur stderr pour le récupérer séparément
+print(f"PAGES:{page_count}", file=sys.stderr)
+
+parts = []
+for i, page in enumerate(reader.pages):
+    try:
+        text = page.extract_text() or ""
+    except Exception:
+        text = ""
+    if text.strip():
+        parts.append(f"=== Page {i+1} ===\\n{text}")
+
+print("\\n\\n".join(parts))
+`;
+
+  for (const py of ["python", "python3"]) {
+    const result = spawnSync(py, ["-c", pythonScript], {
+      input: Buffer.from(buffer),
+      maxBuffer: 100 * 1024 * 1024,
+      timeout: 120000,
+    });
+
+    if (!result.error && result.status === 0) {
+      const text = result.stdout.toString("utf-8").trim();
+      const stderrStr = result.stderr?.toString() ?? "";
+      const pageMatch = stderrStr.match(/PAGES:(\d+)/);
+      const pageCount = pageMatch ? parseInt(pageMatch[1]) : 0;
+      return { text, pageCount };
+    }
+  }
+
+  throw new Error("Impossible d'extraire le texte du PDF (Python requis)");
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) return NextResponse.json({ error: "ANTHROPIC_API_KEY manquante" }, { status: 500 });
+
+    const formData = await req.formData();
+    const file = formData.get("pdf") as File;
+    const supplierId = formData.get("supplier_id") as string;
+    const supplierName = (formData.get("supplier_name") as string) ?? "";
+    const forceInsert = formData.get("force_insert") === "true";
+
+    if (!file || !supplierId) {
+      return NextResponse.json({ error: "Fichier et supplier_id requis" }, { status: 400 });
+    }
+
+    const bytes = await file.arrayBuffer();
+    const fileIsExcel = isExcel(file);
+
+    let messageContent: object[];
+    let excelColonnesPrix: string[] = [];
+
+    if (fileIsExcel) {
+      // Excel → extraire en texte tabulaire → envoyer comme texte à Claude
+      let tableText: string;
+      try {
+        tableText = await excelToText(bytes);
+      } catch {
+        return NextResponse.json(
+          { error: "Impossible de lire le fichier Excel. Vérifiez qu'il n'est pas protégé par un mot de passe." },
+          { status: 422 }
+        );
+      }
+
+      if (!tableText) {
+        return NextResponse.json({ error: "Le fichier Excel semble vide." }, { status: 422 });
+      }
+
+      // Extraire les colonnes directement depuis les en-têtes (sans demander à Claude)
+      excelColonnesPrix = extractColumnsFromExcel(tableText);
+
+      messageContent = [
+        {
+          type: "text",
+          text: `Tu es un expert en extraction de tarifs fournisseurs.
+
+Le fournisseur attendu pour ce tarif est : "${supplierName}"
+
+Voici le contenu du fichier Excel (colonnes séparées par des tabulations) :
+
+${tableText}
+
+1. Identifie le fournisseur réel mentionné dans ce document (nom en en-tête, onglets, etc.)
+2. Détermine si ce document est bien un tarif de "${supplierName}" (coherent: true/false)
+3. Extrais TOUTES les lignes articles avec un prix
+
+Retourne UNIQUEMENT ce JSON (sans markdown, sans texte autour) :
+{
+  "fournisseur_detecte": "nom exact tel qu'il apparaît dans le document",
+  "coherent": true ou false,
+  "lignes": [
+    {
+      "ref_article": "...",
+      "label": "...",
+      "unit_price": 0.0000,
+      "unit": "...",
+      "remise_fournisseur_valeur": 0,
+      "remise_fournisseur_pct": 0,
+      "remise_producteur_valeur": 0,
+      "remise_producteur_pct": 0
+    }
+  ]
+}
+
+Règles :
+- Ne retourne que les lignes articles/produits avec un prix HT
+- Ignore titres, sous-totaux, TVA, lignes vides
+- unit_price = prix NET FACTURE (prix de base APRÈS remise fournisseur, si déjà calculé dans le doc)
+- Pour les champs remise : mets 0 si absent (pas de virgule flottante inutile)
+- ref_article : obligatoire (si absent, utilise les 30 premiers caractères du libellé)
+- coherent = false si le document semble être d'un autre fournisseur que "${supplierName}"`,
+        },
+      ];
+    } else {
+      // PDF — deux modes selon le nombre de pages :
+      // ≤ 100 pages : envoi base64 direct (meilleure qualité visuelle)
+      // > 100 pages : extraction texte via Python (contourne la limite API)
+
+      const PDF_PROMPT_SUFFIX = `
+Règles IMPORTANTES :
+- TOUJOURS extraire toutes les lignes articles, même si coherent=false — le champ coherent est purement informatif
+- Ne retourne que les lignes articles/produits avec un prix HT (ignore titres de catégorie, sous-totaux, lignes vides)
+- Un document "Tarif Détaillé pour un client" est un tarif valide — extrais toutes ses lignes articles
+- unit_price = prix NET HT (colonne "P.U. Net Net HT HD", "P.U. NET HT", "Prix Net HT" ou similaire — toujours le prix le plus à droite côté fournisseur)
+- remise_fournisseur_valeur = montant de remise fournisseur en euros (0 si absent)
+- remise_fournisseur_pct = taux de remise fournisseur en % (0 si absent)
+- remise_producteur_valeur = montant de remise producteur en euros (0 si absent)
+- remise_producteur_pct = taux de remise producteur en % (0 si absent)
+- ref_article : obligatoire (si absent, utilise les 30 premiers caractères du libellé)
+- coherent = false uniquement si le document n'est manifestement pas un tarif (ex: facture client, bon de commande)
+- coherent = true si c'est un tarif fournisseur, même si le nom dans le document diffère légèrement de "${supplierName}"
+- colonnes_prix : liste des intitulés exacts des colonnes de prix trouvées dans le document`;
+
+      const PDF_JSON_SCHEMA = `{
+  "fournisseur_detecte": "nom exact tel qu'il apparaît dans le document",
+  "coherent": true,
+  "colonnes_prix": ["intitulé colonne 1", "intitulé colonne 2"],
+  "lignes": [
+    {
+      "ref_article": "...",
+      "label": "...",
+      "unit_price": 0.0000,
+      "unit": "...",
+      "remise_fournisseur_valeur": 0,
+      "remise_fournisseur_pct": 0,
+      "remise_producteur_valeur": 0,
+      "remise_producteur_pct": 0
+    }
+  ]
+}`;
+
+      // Tenter d'extraire le texte via Python pour connaître le nombre de pages
+      let pdfText: string | null = null;
+      let pageCount = 0;
+
+      try {
+        const extracted = await pdfToText(bytes);
+        pdfText = extracted.text;
+        pageCount = extracted.pageCount;
+      } catch {
+        // Python non disponible ou erreur — on tentera l'envoi base64 direct
+        pdfText = null;
+        pageCount = 0;
+      }
+
+      const tooManyPages = pageCount > 100;
+
+      if (tooManyPages && pdfText) {
+        // Grand PDF : envoyer le texte extrait comme contexte texte
+        excelColonnesPrix = []; // seront détectées par Claude dans le texte
+        messageContent = [
+          {
+            type: "text",
+            text: `Tu es un expert en extraction de tarifs fournisseurs.
+
+Le fournisseur attendu pour ce tarif est : "${supplierName}"
+Ce document PDF contient ${pageCount} pages — voici son contenu textuel extrait :
+
+${pdfText}
+
+1. Identifie le fournisseur réel mentionné dans ce document
+2. Détermine si ce document est bien un tarif de "${supplierName}" (coherent: true/false)
+3. Identifie les intitulés exacts de toutes les colonnes de prix présentes
+4. Extrais TOUTES les lignes articles avec un prix
+
+Retourne UNIQUEMENT ce JSON (sans markdown, sans texte autour) :
+${PDF_JSON_SCHEMA}
+${PDF_PROMPT_SUFFIX}`,
+          },
+        ];
+      } else {
+        // PDF standard (≤ 100 pages) : envoi base64 direct
+        const base64 = Buffer.from(bytes).toString("base64");
+        messageContent = [
+          {
+            type: "document",
+            source: { type: "base64", media_type: "application/pdf", data: base64 },
+          },
+          {
+            type: "text",
+            text: `Tu es un expert en extraction de tarifs fournisseurs.
+
+Le fournisseur attendu pour ce tarif est : "${supplierName}"
+
+1. Identifie le fournisseur réel mentionné dans ce document (nom de l'entreprise, en-tête, logo, etc.)
+2. Détermine si ce document est bien un tarif de "${supplierName}" (coherent: true/false)
+3. Identifie les intitulés exacts de toutes les colonnes de prix présentes dans le document
+4. Extrais TOUTES les lignes articles avec un prix
+
+Retourne UNIQUEMENT ce JSON (sans markdown, sans texte autour) :
+${PDF_JSON_SCHEMA}
+${PDF_PROMPT_SUFFIX}`,
+          },
+        ];
+      }
+    }
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-opus-4-5",
+        max_tokens: 16000,
+        messages: [{ role: "user", content: messageContent }],
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      return NextResponse.json({ error: `Erreur Claude API: ${err}` }, { status: 500 });
+    }
+
+    const result = await response.json();
+    const content = result.content?.[0]?.text ?? "";
+    const stopReason = result.stop_reason ?? "unknown";
+
+    let parsed: ClaudeResponse;
+    try {
+      // Nettoyage robuste : extraire le JSON même si entouré de texte
+      let cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      // Extraire uniquement le bloc JSON si Claude a ajouté du texte autour
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (jsonMatch) cleaned = jsonMatch[0];
+      parsed = JSON.parse(cleaned);
+    } catch {
+      return NextResponse.json({
+        error: stopReason === "max_tokens"
+          ? "Réponse Claude tronquée (trop de lignes). Essayez de diviser le fichier."
+          : "Claude n'a pas retourné un JSON valide",
+        stop_reason: stopReason,
+        raw: content.slice(0, 1000),
+      }, { status: 422 });
+    }
+
+    // colonnes_prix : pour Excel, on les a extraites directement des en-têtes
+    // Pour PDF, Claude les retourne ; sinon tableau vide
+    const colonnes_prix: string[] = fileIsExcel
+      ? excelColonnesPrix
+      : (parsed.colonnes_prix ?? []);
+
+    if (!parsed.colonnes_prix) parsed.colonnes_prix = colonnes_prix;
+
+    const { fournisseur_detecte, coherent, lignes } = parsed;
+
+    if (!Array.isArray(lignes) || lignes.length === 0) {
+      return NextResponse.json({ error: "Aucune ligne extraite", raw: content }, { status: 422 });
+    }
+
+    if (!coherent && !forceInsert) {
+      return NextResponse.json({
+        success: false,
+        coherence_alert: true,
+        fournisseur_detecte,
+        supplierName,
+        count: lignes.length,
+        lines: lignes,
+        colonnes_prix: colonnes_prix ?? [],
+      });
+    }
+
+    // Supprimer les lignes existantes avant d'insérer les nouvelles (remplace le tarif)
+    await supabase.from("price_references").delete().eq("supplier_id", supplierId);
+
+    const rows = lignes.map((l) => ({
+      supplier_id: supplierId,
+      ref_article: String(l.ref_article ?? "").slice(0, 200),
+      label: String(l.label ?? "").slice(0, 500),
+      unit_price: Number(l.unit_price) || 0,
+      unit: String(l.unit ?? "").slice(0, 50),
+      valid_from: new Date().toISOString().slice(0, 10),
+      origin: "ai_extraction",
+    }));
+
+    const { error: insertError } = await supabase.from("price_references").insert(rows);
+    if (insertError) {
+      return NextResponse.json({ error: insertError.message }, { status: 500 });
+    }
+
+    // Upload du fichier original dans Supabase Storage (bucket "tarifs")
+    let storageDebug: string | null = null;
+    try {
+      const safeFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const storagePath = `${supplierId}/${Date.now()}_${safeFilename}`;
+      const { error: uploadError } = await supabase.storage
+        .from("tarifs")
+        .upload(storagePath, Buffer.from(bytes), {
+          contentType: file.type || "application/octet-stream",
+          upsert: true,
+        });
+      if (uploadError) {
+        storageDebug = `upload_error: ${uploadError.message}`;
+      } else {
+        const { error: updateError } = await supabase.from("suppliers").update({ tarif_file_path: storagePath }).eq("id", supplierId);
+        storageDebug = updateError ? `update_error: ${updateError.message}` : `ok: ${storagePath}`;
+      }
+    } catch (e) {
+      storageDebug = `exception: ${String(e)}`;
+    }
+
+    return NextResponse.json({
+      success: true,
+      fournisseur_detecte,
+      coherent,
+      file_type: fileIsExcel ? "excel" : "pdf",
+      count: rows.length,
+      lines: rows,
+      colonnes_prix: colonnes_prix ?? [],
+      storage_debug: storageDebug,
+    });
+  } catch (err) {
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
+}

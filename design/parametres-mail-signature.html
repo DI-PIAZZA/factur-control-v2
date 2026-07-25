@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>factur-control — Paramètres > Mail & Signature</title>
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #F3F4F6;
+  color: #1F2937;
+  padding: 24px;
+}
+.container { max-width: 1400px; margin: 0 auto; }
+.app { background: #1D4ED8; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+
+.header {
+  background: #1E40AF;
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo {
+  width: 32px; height: 32px;
+  background: #E85A00;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 14px;
+}
+.app-name { font-weight: 500; font-size: 15px; color: white; }
+.header-right { display: flex; align-items: center; gap: 16px; }
+.quota { font-size: 13px; color: #DBEAFE; }
+.avatar {
+  width: 32px; height: 32px;
+  background: #E85A00;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 12px;
+}
+.breadcrumb {
+  padding: 14px 22px;
+  background: #1E40AF;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px;
+  border-top: 1px solid #1E3A8A;
+}
+.breadcrumb a { color: #DBEAFE; text-decoration: none; }
+.breadcrumb a:hover { color: white; }
+.breadcrumb .chevron { color: #93C5FD; }
+.breadcrumb .current { color: white; font-weight: 500; }
+
+.content {
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.sidebar {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  position: sticky;
+  top: 22px;
+}
+.sidebar-section {
+  margin: 8px 8px;
+  font-size: 9px;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+}
+.sidebar-section:first-child { margin-top: 0; }
+.sidebar a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  border-radius: 5px;
+  color: #6B7280;
+  font-size: 12.5px;
+  text-decoration: none;
+  margin-bottom: 2px;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.sidebar a:hover { background: #F9FAFB; color: #1F2937; }
+.sidebar a.active { background: #FAECE7; color: #E85A00; font-weight: 500; }
+.sidebar a i { font-size: 16px; flex-shrink: 0; }
+.sidebar a.disabled { color: #9CA3AF; cursor: not-allowed; }
+.badge-v1 {
+  margin-left: auto;
+  font-size: 8px;
+  background: #E5E7EB;
+  color: #6B7280;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.main { display: flex; flex-direction: column; gap: 16px; }
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 24px 26px;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.card h2 {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1F2937;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card h2 i {
+  color: #1D4ED8;
+  font-size: 22px;
+}
+.card-subtitle {
+  font-size: 12px;
+  color: #6B7280;
+  margin-bottom: 22px;
+}
+
+/* SMTP CHOICE */
+.smtp-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.smtp-option {
+  padding: 16px 18px;
+  border: 2px solid #E5E7EB;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.smtp-option:hover { border-color: #93C5FD; }
+.smtp-option.selected {
+  border-color: #1D4ED8;
+  background: #EFF6FF;
+}
+.smtp-option.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #F9FAFB;
+}
+.smtp-option.disabled:hover { border-color: #E5E7EB; }
+
+.smtp-option-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.smtp-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #D1D5DB;
+  flex-shrink: 0;
+  position: relative;
+}
+.smtp-option.selected .smtp-radio {
+  border-color: #1D4ED8;
+}
+.smtp-option.selected .smtp-radio::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #1D4ED8;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.smtp-option .title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1F2937;
+}
+.smtp-option .desc {
+  font-size: 12px;
+  color: #6B7280;
+  line-height: 1.5;
+  margin-left: 28px;
+}
+.smtp-option .badge-soon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #FEF3C7;
+  color: #B45309;
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.smtp-info {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #F0FDF4;
+  border-left: 3px solid #16A34A;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #15803D;
+  line-height: 1.5;
+}
+.smtp-info strong { color: #14532D; }
+
+/* SIGNATURE EDITOR */
+.signature-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.btn-small {
+  background: white;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.btn-small:hover { background: #EFF6FF; }
+.btn-small i { font-size: 13px; }
+
+.editor-toolbar {
+  display: flex;
+  gap: 2px;
+  padding: 8px 10px;
+  background: #F9FAFB;
+  border: 1px solid #D1D5DB;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  flex-wrap: wrap;
+}
+.toolbar-btn {
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4B5563;
+  transition: all 0.15s;
+}
+.toolbar-btn:hover { background: #E5E7EB; color: #1F2937; }
+.toolbar-btn.active { background: #DBEAFE; color: #1D4ED8; }
+.toolbar-btn i { font-size: 16px; }
+.toolbar-divider {
+  width: 1px;
+  background: #D1D5DB;
+  margin: 4px 4px;
+}
+
+.editor-content {
+  min-height: 200px;
+  padding: 18px 20px;
+  border: 1px solid #D1D5DB;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  background: white;
+  outline: none;
+}
+.editor-content .sig-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1F2937;
+}
+.editor-content .sig-role {
+  font-size: 12px;
+  color: #6B7280;
+  font-style: italic;
+}
+.editor-content .sig-company {
+  font-size: 13px;
+  font-weight: 500;
+  color: #E85A00;
+  margin-top: 6px;
+}
+.editor-content .sig-line {
+  font-size: 11px;
+  color: #4B5563;
+  margin-top: 2px;
+}
+.editor-content .sig-divider {
+  border-top: 1px solid #E5E7EB;
+  margin: 8px 0;
+}
+.editor-content .sig-mention {
+  font-size: 10px;
+  color: #9CA3AF;
+}
+
+.editor-help {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* PREVIEW */
+.preview-toggle {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.preview-box {
+  margin-top: 14px;
+  padding: 20px 24px;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+}
+.preview-mail-header {
+  font-size: 11px;
+  color: #6B7280;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #E5E7EB;
+  line-height: 1.7;
+}
+.preview-mail-header strong { color: #1F2937; font-weight: 500; }
+.preview-mail-body {
+  font-size: 13px;
+  color: #1F2937;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+}
+.btn-cancel {
+  background: white;
+  color: #6B7280;
+  border: 1px solid #D1D5DB;
+}
+.btn-cancel:hover { background: #F9FAFB; }
+.btn-primary {
+  background: #E85A00;
+  color: white;
+}
+.btn-primary:hover { background: #C44A00; }
+
+@media (max-width: 900px) {
+  .content { grid-template-columns: 1fr; }
+  .smtp-options { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="app">
+
+<div class="header">
+<div class="header-left">
+<div class="logo">FC</div>
+<span class="app-name">factur-control</span>
+</div>
+<div class="header-right">
+<span class="quota">87 / 500 factures</span>
+<div class="avatar">SD</div>
+</div>
+</div>
+
+<div class="breadcrumb">
+<a href="#"><i class="ti ti-home"></i> Accueil</a>
+<i class="ti ti-chevron-right chevron"></i>
+<a href="#">Paramètres</a>
+<i class="ti ti-chevron-right chevron"></i>
+<span class="current">Mail & Signature</span>
+</div>
+
+<div class="content">
+
+<aside class="sidebar">
+<p class="sidebar-section">Compte</p>
+<a href="#"><i class="ti ti-user"></i> Profil</a>
+<a href="#"><i class="ti ti-building"></i> Société</a>
+<a href="#"><i class="ti ti-shield-lock"></i> Sécurité</a>
+
+<p class="sidebar-section">Préférences</p>
+<a href="#" class="active"><i class="ti ti-mail"></i> Mail &amp; Signature</a>
+<a href="#"><i class="ti ti-trending-up"></i> Rentabilité</a>
+<a href="#"><i class="ti ti-bell"></i> Notifications</a>
+
+<p class="sidebar-section">Abonnement</p>
+<a href="#"><i class="ti ti-credit-card"></i> Abonnement</a>
+<a href="#" class="disabled"><i class="ti ti-users"></i> Équipe<span class="badge-v1">V1</span></a>
+</aside>
+
+<div class="main">
+
+<!-- ENVOI DES MAILS -->
+<div class="card">
+<h2><i class="ti ti-send"></i>Envoi des mails d'avoir</h2>
+<p class="card-subtitle">Choisissez le service utilisé pour envoyer vos demandes d'avoir aux fournisseurs.</p>
+
+<div class="smtp-options">
+
+<div class="smtp-option selected">
+<div class="smtp-option-header">
+<div class="smtp-radio"></div>
+<span class="title">Service factur-control</span>
+</div>
+<p class="desc">Envoi automatique via notre infrastructure (Brevo). Le mail apparaît comme provenant de votre adresse personnelle. Aucune configuration requise.</p>
+</div>
+
+<div class="smtp-option disabled">
+<span class="badge-soon">BIENTÔT</span>
+<div class="smtp-option-header">
+<div class="smtp-radio"></div>
+<span class="title">Mon SMTP personnel</span>
+</div>
+<p class="desc">Utilisez votre propre serveur SMTP (Outlook 365, Gmail, OVH...). Plus pro mais nécessite une configuration technique.</p>
+</div>
+
+</div>
+
+<div class="smtp-info">
+<i class="ti ti-info-circle" style="font-size: 14px; vertical-align: -2px; margin-right: 4px;"></i>
+<strong>Pour la BETA :</strong> Tous les mails sont envoyés via notre infrastructure Brevo. Le SMTP personnel sera disponible en V1.
+</div>
+
+</div>
+
+<!-- SIGNATURE MAIL -->
+<div class="card">
+<div class="card-header">
+<h2><i class="ti ti-signature"></i>Signature mail</h2>
+<button class="btn-small">
+<i class="ti ti-refresh"></i> Régénérer depuis mon profil
+</button>
+</div>
+<p class="card-subtitle">Cette signature apparaîtra automatiquement en bas de tous vos mails d'avoir envoyés aux fournisseurs.</p>
+
+<div class="editor-toolbar">
+<button class="toolbar-btn active" title="Gras"><i class="ti ti-bold"></i></button>
+<button class="toolbar-btn" title="Italique"><i class="ti ti-italic"></i></button>
+<button class="toolbar-btn" title="Souligné"><i class="ti ti-underline"></i></button>
+<div class="toolbar-divider"></div>
+<button class="toolbar-btn" title="Couleur"><i class="ti ti-palette"></i></button>
+<button class="toolbar-btn" title="Taille"><i class="ti ti-text-size"></i></button>
+<div class="toolbar-divider"></div>
+<button class="toolbar-btn" title="Liste"><i class="ti ti-list"></i></button>
+<button class="toolbar-btn" title="Liste numérotée"><i class="ti ti-list-numbers"></i></button>
+<div class="toolbar-divider"></div>
+<button class="toolbar-btn" title="Lien"><i class="ti ti-link"></i></button>
+<button class="toolbar-btn" title="Insérer une image"><i class="ti ti-photo"></i></button>
+<button class="toolbar-btn" title="Insérer le logo société"><i class="ti ti-building"></i></button>
+<div class="toolbar-divider"></div>
+<button class="toolbar-btn" title="Annuler"><i class="ti ti-arrow-back-up"></i></button>
+<button class="toolbar-btn" title="Refaire"><i class="ti ti-arrow-forward-up"></i></button>
+</div>
+
+<div class="editor-content" contenteditable="true">
+<div class="sig-name">Stéphano Di Piazza</div>
+<div class="sig-role">Gérant</div>
+<div class="sig-company">DI PIAZZA SARL</div>
+<div class="sig-line">📍 42 Avenue des Pins, 84000 Avignon</div>
+<div class="sig-line">📞 06 12 34 56 78 · ✉️ stephano.dipiazza@example.fr</div>
+<div class="sig-divider"></div>
+<div class="sig-mention">SIREN : 123 456 789 · TVA Intracom : FR12345678901</div>
+</div>
+
+<p class="editor-help">
+<i class="ti ti-bulb" style="color: #F59E0B;"></i>
+Astuce : cliquez sur "Régénérer" pour reconstruire automatiquement la signature à partir de vos informations de profil.
+</p>
+
+</div>
+
+<!-- APERÇU -->
+<div class="card">
+<h2><i class="ti ti-eye"></i>Aperçu d'un mail d'avoir</h2>
+<p class="card-subtitle">Voici à quoi ressemblera un mail envoyé à un fournisseur (exemple).</p>
+
+<div class="preview-box">
+
+<div class="preview-mail-header">
+<strong>De :</strong> Stéphano Di Piazza &lt;stephano.dipiazza@example.fr&gt;<br>
+<strong>À :</strong> compta@rossi84.fr<br>
+<strong>Objet :</strong> Demande d'avoir — Facture n°FA-2026-1547 du 15/03/2026
+</div>
+
+<div class="preview-mail-body">
+<p style="margin-bottom: 12px;">Bonjour,</p>
+
+<p style="margin-bottom: 12px;">Lors du contrôle de votre facture <strong>n°FA-2026-1547 du 15/03/2026</strong>, j'ai relevé <strong>3 écarts de prix</strong> par rapport au tarif négocié pour 2026.</p>
+
+<p style="margin-bottom: 12px;">Le montant total de la sur-facturation s'élève à <strong style="color: #DC2626;">147,80 € HT</strong>.</p>
+
+<p style="margin-bottom: 12px;">Vous trouverez le détail des écarts dans la facture annotée jointe à ce mail. Merci de bien vouloir m'établir un avoir pour ce montant dans les meilleurs délais.</p>
+
+<p style="margin-bottom: 12px;">Restant à votre disposition,</p>
+
+<p>Cordialement,</p>
+</div>
+
+<div class="editor-content" style="border: none; padding: 0; min-height: auto; background: transparent;">
+<div class="sig-name">Stéphano Di Piazza</div>
+<div class="sig-role">Gérant</div>
+<div class="sig-company">DI PIAZZA SARL</div>
+<div class="sig-line">📍 42 Avenue des Pins, 84000 Avignon</div>
+<div class="sig-line">📞 06 12 34 56 78 · ✉️ stephano.dipiazza@example.fr</div>
+<div class="sig-divider"></div>
+<div class="sig-mention">SIREN : 123 456 789 · TVA Intracom : FR12345678901</div>
+</div>
+
+</div>
+
+</div>
+
+<!-- ACTIONS -->
+<div class="actions">
+<button class="btn btn-cancel">Annuler</button>
+<button class="btn btn-primary"><i class="ti ti-device-floppy"></i> Enregistrer</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+</body>
+</html>
