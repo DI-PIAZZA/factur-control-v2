@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import NouveauFournisseurForm from "./NouveauFournisseurForm";
 
@@ -18,7 +19,7 @@ export default async function NouveauFournisseurPage() {
         <div style={{ maxWidth: "640px" }}>
           {/* Fil d'Ariane */}
           <div style={{ marginBottom: "20px" }}>
-            <a
+            <Link
               href="/fournisseurs"
               style={{
                 color: "#6B7280",
@@ -30,7 +31,7 @@ export default async function NouveauFournisseurPage() {
               }}
             >
               ← Retour aux fournisseurs
-            </a>
+            </Link>
           </div>
 
           <h1

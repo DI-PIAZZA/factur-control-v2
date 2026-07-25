@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import UploadReleveForm from "./UploadReleveForm";
 
@@ -20,14 +21,14 @@ export default async function NouvelleRelevePage() {
       <main style={{ flex: 1, background: "#F1F5F9", padding: "24px 32px" }}>
         {/* Retour */}
         <div style={{ marginBottom: "20px" }}>
-          <a href="/dashboard" style={{
+          <Link href="/dashboard" style={{
             display: "inline-flex", alignItems: "center", gap: "6px",
             color: "#1D4ED8", fontSize: "13px", fontWeight: "600",
             textDecoration: "none", background: "#EFF6FF",
             border: "1px solid #BFDBFE", padding: "6px 14px", borderRadius: "8px",
           }}>
             ← Accueil
-          </a>
+          </Link>
         </div>
 
         <div style={{ maxWidth: "560px", margin: "0 auto" }}>
@@ -50,9 +51,9 @@ export default async function NouvelleRelevePage() {
             {(!suppliers || suppliers.length === 0) ? (
               <div style={{ textAlign: "center", color: "#6B7280", fontSize: "14px" }}>
                 <p>Aucun fournisseur trouvé.</p>
-                <a href="/fournisseurs/nouveau" style={{ color: "#E85A00", fontWeight: "600" }}>
+                <Link href="/fournisseurs/nouveau" style={{ color: "#E85A00", fontWeight: "600", display: "inline-block" }}>
                   Ajouter un fournisseur →
-                </a>
+                </Link>
               </div>
             ) : (
               <UploadReleveForm suppliers={suppliers} />

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import DeleteTarifButton from "./DeleteTarifButton";
 import TarifTable from "./TarifTable";
@@ -46,7 +47,7 @@ export default async function FournisseurDetailPage({
         <div style={{ maxWidth: "100%" }}>
           {/* Retour */}
           <div style={{ marginBottom: "20px" }}>
-            <a
+            <Link
               href="/fournisseurs"
               style={{
                 display: "inline-flex",
@@ -64,7 +65,7 @@ export default async function FournisseurDetailPage({
               }}
             >
               ← Retour aux fournisseurs
-            </a>
+            </Link>
           </div>
 
           {/* Header fournisseur */}
@@ -148,7 +149,7 @@ export default async function FournisseurDetailPage({
 
             {/* Actions */}
             <div style={{ display: "flex", gap: "10px", flexShrink: 0 }}>
-              <a
+              <Link
                 href={`/fournisseurs/${id}/modifier`}
                 style={{
                   background: "white",
@@ -165,8 +166,8 @@ export default async function FournisseurDetailPage({
                 }}
               >
                 ✏️ Modifier
-              </a>
-              <a
+              </Link>
+              <Link
                 href={`/fournisseurs/${id}/nouveau-tarif`}
                 style={{
                   background: "#E85A00",
@@ -182,7 +183,7 @@ export default async function FournisseurDetailPage({
                 }}
               >
                 + Ajouter un tarif
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -246,7 +247,7 @@ export default async function FournisseurDetailPage({
               {tarifs && tarifs.length > 0 && (
                 <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                   {supplier.tarif_file_path && (
-                    <a
+                    <Link
                       href={`/api/tarif-file?supplierId=${id}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -261,7 +262,7 @@ export default async function FournisseurDetailPage({
                       }}
                     >
                       📄 Voir le tarif
-                    </a>
+                    </Link>
                   )}
                   <ChangeColonneButton supplierId={id} currentColumn={supplier.price_column ?? ""} />
                   <DeleteTarifButton supplierId={id} count={tarifs.length} />
@@ -283,7 +284,7 @@ export default async function FournisseurDetailPage({
                 <p style={{ margin: "0 0 20px" }}>
                   Aucun tarif. Uploadez le fichier de tarif de ce fournisseur (PDF ou Excel).
                 </p>
-                <a
+                <Link
                   href={`/fournisseurs/${id}/nouveau-tarif`}
                   style={{
                     background: "#E85A00",
@@ -293,10 +294,11 @@ export default async function FournisseurDetailPage({
                     fontSize: "13px",
                     fontWeight: "600",
                     textDecoration: "none",
+                    display: "inline-block",
                   }}
                 >
                   + Ajouter un tarif
-                </a>
+                </Link>
               </div>
             )}
 

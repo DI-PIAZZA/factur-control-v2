@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import { addTarifAction } from "./actions";
 import ExtractTarifForm from "./ExtractTarifForm";
@@ -37,9 +38,9 @@ export default async function NouveauTarifPage({
         <div style={{ maxWidth: "680px" }}>
           {/* Fil d'Ariane */}
           <div style={{ marginBottom: "20px", fontSize: "14px", color: "#6B7280" }}>
-            <a href="/fournisseurs" style={{ color: "#6B7280", textDecoration: "none" }}>Fournisseurs</a>
+            <Link href="/fournisseurs" style={{ color: "#6B7280", textDecoration: "none" }}>Fournisseurs</Link>
             {" › "}
-            <a href={`/fournisseurs/${id}`} style={{ color: "#6B7280", textDecoration: "none" }}>{supplier.name}</a>
+            <Link href={`/fournisseurs/${id}`} style={{ color: "#6B7280", textDecoration: "none" }}>{supplier.name}</Link>
             {" › "}
             <span style={{ color: "#1F2937" }}>Ajouter un tarif</span>
           </div>
@@ -51,7 +52,7 @@ export default async function NouveauTarifPage({
 
             {/* Toggle IA / Manuel */}
             <div style={{ display: "flex", gap: "8px" }}>
-              <a
+              <Link
                 href={`/fournisseurs/${id}/nouveau-tarif`}
                 style={{
                   padding: "8px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: "600",
@@ -59,11 +60,12 @@ export default async function NouveauTarifPage({
                   background: !showManual ? "#1D4ED8" : "white",
                   color: !showManual ? "white" : "#6B7280",
                   border: !showManual ? "none" : "1px solid #E5E7EB",
+                  display: "inline-block",
                 }}
               >
                 ✨ PDF par IA
-              </a>
-              <a
+              </Link>
+              <Link
                 href={`/fournisseurs/${id}/nouveau-tarif?mode=manuel`}
                 style={{
                   padding: "8px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: "600",
@@ -71,10 +73,11 @@ export default async function NouveauTarifPage({
                   background: showManual ? "#1D4ED8" : "white",
                   color: showManual ? "white" : "#6B7280",
                   border: showManual ? "none" : "1px solid #E5E7EB",
+                  display: "inline-block",
                 }}
               >
                 ✏️ Saisie manuelle
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -130,13 +133,13 @@ export default async function NouveauTarifPage({
                     }}>
                       Enregistrer
                     </button>
-                    <a href={`/fournisseurs/${id}`} style={{
+                    <Link href={`/fournisseurs/${id}`} style={{
                       background: "#F3F4F6", color: "#6B7280", padding: "12px 24px",
                       borderRadius: "8px", fontSize: "14px", fontWeight: "600", textDecoration: "none",
                       display: "inline-flex", alignItems: "center",
                     }}>
                       Annuler
-                    </a>
+                    </Link>
                   </div>
                 </form>
               </div>

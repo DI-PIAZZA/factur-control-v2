@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import { updateSupplierAction } from "./actions";
 
@@ -35,9 +36,9 @@ export default async function ModifierFournisseurPage({
         <div style={{ maxWidth: "520px" }}>
           {/* Fil d'Ariane */}
           <div style={{ marginBottom: "20px", fontSize: "14px", color: "#6B7280" }}>
-            <a href="/fournisseurs" style={{ color: "#6B7280", textDecoration: "none" }}>Fournisseurs</a>
+            <Link href="/fournisseurs" style={{ color: "#6B7280", textDecoration: "none" }}>Fournisseurs</Link>
             {" › "}
-            <a href={`/fournisseurs/${id}`} style={{ color: "#6B7280", textDecoration: "none" }}>{supplier.name}</a>
+            <Link href={`/fournisseurs/${id}`} style={{ color: "#6B7280", textDecoration: "none" }}>{supplier.name}</Link>
             {" › "}
             <span style={{ color: "#1F2937" }}>Modifier</span>
           </div>
@@ -142,14 +143,14 @@ export default async function ModifierFournisseurPage({
                 }}>
                   Enregistrer
                 </button>
-                <a href={`/fournisseurs/${id}`} style={{
+                <Link href={`/fournisseurs/${id}`} style={{
                   background: "#F3F4F6", color: "#6B7280",
                   padding: "12px 24px", borderRadius: "8px",
                   fontSize: "14px", fontWeight: "600", textDecoration: "none",
                   display: "inline-flex", alignItems: "center",
                 }}>
                   Annuler
-                </a>
+                </Link>
               </div>
             </form>
           </div>

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import DeleteReleveButton from "./DeleteReleveButton";
 
@@ -71,23 +72,23 @@ export default async function ReleveResultatPage({
       <main style={{ flex: 1, background: "#F1F5F9", padding: "24px 32px" }}>
         {/* Retour */}
         <div style={{ marginBottom: "20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <a href="/dashboard" style={{
+          <Link href="/dashboard" style={{
             display: "inline-flex", alignItems: "center", gap: "6px",
             color: "#1D4ED8", fontSize: "13px", fontWeight: "600",
             textDecoration: "none", background: "#EFF6FF",
             border: "1px solid #BFDBFE", padding: "6px 14px", borderRadius: "8px",
           }}>
             ← Accueil
-          </a>
+          </Link>
           <DeleteReleveButton releveId={id} />
           {pdfSignedUrl && (
-            <a href={pdfSignedUrl} target="_blank" rel="noopener noreferrer" style={{
+            <Link href={pdfSignedUrl} target="_blank" rel="noopener noreferrer" style={{
               display: "inline-flex", alignItems: "center", gap: "6px",
               background: "#E85A00", color: "white", textDecoration: "none",
               fontSize: "13px", fontWeight: "700", padding: "8px 16px", borderRadius: "8px",
             }}>
               📄 Voir le relevé PDF
-            </a>
+            </Link>
           )}
         </div>
 
@@ -216,7 +217,7 @@ export default async function ReleveResultatPage({
                         );
                       }
                       return (
-                        <a href={`/factures/${l.matched_invoice_id}`} style={{
+                        <Link href={`/factures/${l.matched_invoice_id}`} style={{
                           display: "inline-flex", alignItems: "center", gap: "6px",
                           background: "#FFF7ED", color: "#EA580C",
                           fontSize: "12px", fontWeight: "700",
@@ -225,7 +226,7 @@ export default async function ReleveResultatPage({
                           textDecoration: "none", cursor: "pointer",
                         }}>
                           ⚠️ Non contrôlée →
-                        </a>
+                        </Link>
                       );
                     })() : (
                       <span style={{ fontSize: "12px", color: "#D1D5DB" }}>—</span>
@@ -233,7 +234,7 @@ export default async function ReleveResultatPage({
                   </td>
                   <td style={{ padding: "12px 16px" }}>
                     {l.matched_invoice_id ? (
-                      <a
+                      <Link
                         href={`/factures/${l.matched_invoice_id}`}
                         style={{
                           display: "inline-flex", alignItems: "center", gap: "4px",
@@ -244,9 +245,9 @@ export default async function ReleveResultatPage({
                         }}
                       >
                         📋 Voir
-                      </a>
+                      </Link>
                     ) : (
-                      <a
+                      <Link
                         href={`/factures/nouvelle?supplier_id=${releve.supplier_id}&releve_id=${id}&invoice_number=${encodeURIComponent(l.invoice_number ?? "")}&amount_ht=${l.amount_ht ?? 0}`}
                         style={{
                           display: "inline-flex", alignItems: "center", gap: "4px",
@@ -257,7 +258,7 @@ export default async function ReleveResultatPage({
                         }}
                       >
                         + Importer
-                      </a>
+                      </Link>
                     )}
                   </td>
                 </tr>

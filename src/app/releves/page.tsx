@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 
 export default async function RelevesPage({
@@ -40,14 +41,14 @@ export default async function RelevesPage({
       <main style={{ flex: 1, background: "#F1F5F9", padding: "24px 32px" }}>
         {/* Retour accueil */}
         <div style={{ marginBottom: "20px" }}>
-          <a href="/dashboard" style={{
+          <Link href="/dashboard" style={{
             display: "inline-flex", alignItems: "center", gap: "6px",
             color: "#1D4ED8", fontSize: "13px", fontWeight: "600",
             textDecoration: "none", background: "#EFF6FF",
             border: "1px solid #BFDBFE", padding: "6px 14px", borderRadius: "8px",
           }}>
             ← Accueil
-          </a>
+          </Link>
         </div>
 
         {/* Header */}
@@ -55,7 +56,7 @@ export default async function RelevesPage({
           <h1 style={{ fontSize: "22px", fontWeight: "700", color: "#1F2937", margin: 0 }}>
             Relevés de compte
           </h1>
-          <a
+          <Link
             href="/releves/nouvelle"
             style={{
               background: "#E85A00", color: "white", padding: "10px 20px",
@@ -64,7 +65,7 @@ export default async function RelevesPage({
             }}
           >
             + Analyser un relevé
-          </a>
+          </Link>
         </div>
 
         {/* Succès suppression */}
@@ -84,9 +85,9 @@ export default async function RelevesPage({
             <p style={{ fontSize: "14px", color: "#6B7280", marginBottom: "28px" }}>
               Uploadez un relevé fournisseur pour vérifier qu'il correspond à vos factures.
             </p>
-            <a href="/releves/nouvelle" style={{ background: "#E85A00", color: "white", padding: "12px 28px", borderRadius: "8px", fontSize: "14px", fontWeight: "600", textDecoration: "none" }}>
+            <Link href="/releves/nouvelle" style={{ background: "#E85A00", color: "white", padding: "12px 28px", borderRadius: "8px", fontSize: "14px", fontWeight: "600", textDecoration: "none", display: "inline-block" }}>
               Analyser un relevé
-            </a>
+            </Link>
           </div>
         )}
 
@@ -152,7 +153,7 @@ export default async function RelevesPage({
                         </div>
                       </td>
                       <td style={{ padding: "14px 16px" }}>
-                        <a
+                        <Link
                           href={`/releves/${r.id}`}
                           style={{
                             display: "inline-flex", alignItems: "center", gap: "6px",
@@ -163,7 +164,7 @@ export default async function RelevesPage({
                           }}
                         >
                           📋 Voir le relevé
-                        </a>
+                        </Link>
                       </td>
                     </tr>
                   );
