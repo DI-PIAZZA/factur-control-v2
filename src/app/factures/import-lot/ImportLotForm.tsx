@@ -1041,6 +1041,10 @@ export default function ImportLotForm() {
                           }}>
                             Voir →
                           </Link>
+                        ) : r.statut === "ok" && !r.invoice_id ? (
+                          <span style={{ fontSize: "11px", color: "#F59E0B", fontWeight: "600" }}>
+                            ⚠️ Erreur création
+                          </span>
                         ) : r.statut === "erreur" ? (
                           <span style={{ fontSize: "11px", color: "#DC2626", fontWeight: "600", display: "block", wordBreak: "break-word" }}>
                             ❌ {r.raison ?? "Erreur inconnue"}

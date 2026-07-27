@@ -35,7 +35,7 @@ export default async function ImportLotPage() {
             Import en lot
           </h1>
           <p style={{ margin: 0, fontSize: "14px", color: "#6B7280" }}>
-            Importe toutes tes factures depuis le début de l&apos;année en une seule opération.
+            Importe plusieurs factures en une seule opération.
           </p>
         </div>
 
