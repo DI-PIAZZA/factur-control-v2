@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import ImportLotForm from "./ImportLotForm";
 
@@ -16,13 +17,13 @@ export default async function ImportLotPage() {
 
         {/* Retour */}
         <div style={{ marginBottom: "20px" }}>
-          <a href="/factures" style={{
+          <Link href="/factures" style={{
             display: "inline-flex", alignItems: "center", gap: "8px",
             background: "#1F2937", color: "white", textDecoration: "none",
             fontSize: "14px", fontWeight: "600", padding: "8px 16px", borderRadius: "8px",
           }}>
             ← Retour aux factures
-          </a>
+          </Link>
         </div>
 
         {/* Header */}

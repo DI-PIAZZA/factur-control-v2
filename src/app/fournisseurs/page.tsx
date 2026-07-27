@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import DeleteFournisseurButton from "./DeleteFournisseurButton";
 import SetColonneFactureButton from "./SetColonneFactureButton";
@@ -42,14 +43,14 @@ export default async function FournisseursPage({
       <main style={{ flex: 1, background: "#F1F5F9", padding: "32px" }}>
         {/* Retour accueil */}
         <div style={{ marginBottom: "20px" }}>
-          <a href="/dashboard" style={{
+          <Link href="/dashboard" style={{
             display: "inline-flex", alignItems: "center", gap: "6px",
             color: "#1D4ED8", fontSize: "13px", fontWeight: "600",
             textDecoration: "none", background: "#EFF6FF",
             border: "1px solid #BFDBFE", padding: "6px 14px", borderRadius: "8px",
           }}>
             ← Accueil
-          </a>
+          </Link>
         </div>
 
         {/* Header */}
@@ -64,7 +65,7 @@ export default async function FournisseursPage({
           <h1 style={{ fontSize: "22px", fontWeight: "700", color: "#1F2937" }}>
             Fournisseurs
           </h1>
-          <a
+          <Link
             href="/fournisseurs/nouveau"
             style={{
               background: "#E85A00",
@@ -80,7 +81,7 @@ export default async function FournisseursPage({
             }}
           >
             + Ajouter un fournisseur
-          </a>
+          </Link>
         </div>
 
         {/* Succès colonne */}
@@ -152,7 +153,7 @@ export default async function FournisseursPage({
               Ajoutez votre premier fournisseur pour commencer à contrôler vos
               factures.
             </p>
-            <a
+            <Link
               href="/fournisseurs/nouveau"
               style={{
                 background: "#E85A00",
@@ -165,7 +166,7 @@ export default async function FournisseursPage({
               }}
             >
               Ajouter un fournisseur
-            </a>
+            </Link>
           </div>
         )}
 
@@ -221,12 +222,12 @@ export default async function FournisseursPage({
                         color: "#1F2937",
                       }}
                     >
-                      <a
+                      <Link
                         href={`/fournisseurs/${s.id}`}
                         style={{ color: "#1D4ED8", textDecoration: "none", fontWeight: "600" }}
                       >
                         {s.name}
-                      </a>
+                      </Link>
                     </td>
                     <td
                       style={{
@@ -273,7 +274,7 @@ export default async function FournisseursPage({
                       {new Date(s.created_at).toLocaleDateString("fr-FR")}
                     </td>
                     <td style={{ padding: "14px 16px", textAlign: "right", whiteSpace: "nowrap" }}>
-                      <a
+                      <Link
                         href={`/fournisseurs/${s.id}/nouveau-tarif`}
                         style={{
                           fontSize: "12px",
@@ -288,8 +289,8 @@ export default async function FournisseursPage({
                         }}
                       >
                         + Tarif
-                      </a>
-                      <a
+                      </Link>
+                      <Link
                         href={`/fournisseurs/${s.id}/modifier`}
                         style={{
                           fontSize: "12px",
@@ -305,7 +306,7 @@ export default async function FournisseursPage({
                         }}
                       >
                         ✏️ Modifier
-                      </a>
+                      </Link>
                       <DeleteFournisseurButton supplierId={s.id} supplierName={s.name} />
                     </td>
                   </tr>

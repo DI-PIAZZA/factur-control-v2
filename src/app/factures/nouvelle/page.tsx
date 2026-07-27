@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import NouvelleFactureForm from "./NouvelleFactureForm";
 
@@ -33,9 +34,9 @@ export default async function NouvelleFacturePage({
         <div style={{ maxWidth: "680px" }}>
           {/* Retour */}
           <div style={{ marginBottom: "20px" }}>
-            <a href={retourHref} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#1F2937", color: "white", textDecoration: "none", fontSize: "14px", fontWeight: "600", padding: "8px 16px", borderRadius: "8px" }}>
+            <Link href={retourHref} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#1F2937", color: "white", textDecoration: "none", fontSize: "14px", fontWeight: "600", padding: "8px 16px", borderRadius: "8px" }}>
               {retourLabel}
-            </a>
+            </Link>
           </div>
 
           {/* Bandeau relevé avec rappel de la facture */}

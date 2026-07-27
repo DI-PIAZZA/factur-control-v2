@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import DeleteFactureButton from "./[id]/DeleteFactureButton";
 
@@ -31,21 +32,21 @@ export default async function FacturesPage({
       <main style={{ flex: 1, background: "#F1F5F9", padding: "24px 32px" }}>
         {/* Retour accueil */}
         <div style={{ marginBottom: "20px" }}>
-          <a href="/dashboard" style={{
+          <Link href="/dashboard" style={{
             display: "inline-flex", alignItems: "center", gap: "6px",
             color: "#1D4ED8", fontSize: "13px", fontWeight: "600",
             textDecoration: "none", background: "#EFF6FF",
             border: "1px solid #BFDBFE", padding: "6px 14px", borderRadius: "8px",
           }}>
             ← Accueil
-          </a>
+          </Link>
         </div>
 
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
           <h1 style={{ fontSize: "22px", fontWeight: "700", color: "#1F2937", margin: 0 }}>Factures</h1>
           <div style={{ display: "flex", gap: "10px" }}>
-            <a
+            <Link
               href="/factures/import-lot"
               style={{
                 background: "#1D4ED8", color: "white", padding: "10px 20px",
@@ -54,8 +55,8 @@ export default async function FacturesPage({
               }}
             >
               📦 Import en lot
-            </a>
-            <a
+            </Link>
+            <Link
               href="/factures/nouvelle"
               style={{
                 background: "#E85A00", color: "white", padding: "10px 20px",
@@ -64,7 +65,7 @@ export default async function FacturesPage({
               }}
             >
               + Contrôler une facture
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -83,9 +84,9 @@ export default async function FacturesPage({
             <p style={{ fontSize: "14px", color: "#6B7280", marginBottom: "28px" }}>
               Importez votre première facture pour démarrer le contrôle automatique.
             </p>
-            <a href="/factures/nouvelle" style={{ background: "#E85A00", color: "white", padding: "12px 28px", borderRadius: "8px", fontSize: "14px", fontWeight: "600", textDecoration: "none" }}>
+            <Link href="/factures/nouvelle" style={{ background: "#E85A00", color: "white", padding: "12px 28px", borderRadius: "8px", fontSize: "14px", fontWeight: "600", textDecoration: "none" }}>
               Contrôler une facture
-            </a>
+            </Link>
           </div>
         )}
 
@@ -133,19 +134,19 @@ export default async function FacturesPage({
                       </td>
                       <td style={{ padding: "14px 16px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                          <a
+                          <Link
                             href={`/factures/${f.id}`}
                             style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#EFF6FF", color: "#1D4ED8", textDecoration: "none", fontSize: "13px", fontWeight: "600", padding: "6px 12px", borderRadius: "6px", border: "1px solid #BFDBFE", whiteSpace: "nowrap" }}
                           >
                             📋 Voir la facture
-                          </a>
+                          </Link>
                           {f.status === "checked" && (
-                            <a
+                            <Link
                               href={`/factures/${f.id}/resultat`}
                               style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#F0FDF4", color: "#16A34A", textDecoration: "none", fontSize: "13px", fontWeight: "600", padding: "6px 12px", borderRadius: "6px", border: "1px solid #86EFAC", whiteSpace: "nowrap" }}
                             >
                               📊 Résultat
-                            </a>
+                            </Link>
                           )}
                           <DeleteFactureButton invoiceId={f.id} />
                         </div>

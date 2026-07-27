@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import ProcessingLoader from "./ProcessingLoader";
 import AnalysisLoader from "./AnalysisLoader";
 
@@ -841,13 +842,13 @@ export default function ImportLotForm() {
             background: "white", borderBottom: "1px solid #E5E7EB", padding: "16px 24px",
             boxShadow: "0 1px 3px rgba(0,0,0,0.08)", position: "sticky", top: 0, zIndex: 10,
           }}>
-            <a href="/factures" style={{
+            <Link href="/factures" style={{
               display: "inline-block", background: "#1F2937", color: "white",
               textDecoration: "none", borderRadius: "8px", padding: "10px 20px",
               fontSize: "13px", fontWeight: "600",
             }}>
               ← Retour aux factures
-            </a>
+            </Link>
             <button
               onClick={() => {
                 setEtape("select");
@@ -1032,14 +1033,14 @@ export default function ImportLotForm() {
                       </td>
                       <td style={{ padding: "10px 14px", maxWidth: "260px" }}>
                         {r.statut === "ok" && r.invoice_id ? (
-                          <a href={`/factures/${r.invoice_id}/resultat`} style={{
+                          <Link href={`/factures/${r.invoice_id}/resultat`} style={{
                             fontSize: "12px", fontWeight: "700", color: "#1D4ED8",
                             textDecoration: "none", background: "#EFF6FF",
                             padding: "3px 10px", borderRadius: "6px",
                             border: "1px solid #BFDBFE",
                           }}>
                             Voir →
-                          </a>
+                          </Link>
                         ) : r.statut === "erreur" ? (
                           <span style={{ fontSize: "11px", color: "#DC2626", fontWeight: "600", display: "block", wordBreak: "break-word" }}>
                             ❌ {r.raison ?? "Erreur inconnue"}

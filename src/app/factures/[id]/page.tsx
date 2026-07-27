@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import DeleteFactureButton from "./DeleteFactureButton";
 import ControlerButton from "./ControlerButton";
@@ -64,9 +65,9 @@ export default async function FactureDetailPage({
         <div>
           {/* Retour + Supprimer */}
           <div style={{ marginBottom: "20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <a href="/factures" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#1F2937", color: "white", textDecoration: "none", fontSize: "14px", fontWeight: "600", padding: "8px 16px", borderRadius: "8px" }}>
+            <Link href="/factures" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#1F2937", color: "white", textDecoration: "none", fontSize: "14px", fontWeight: "600", padding: "8px 16px", borderRadius: "8px" }}>
               ← Retour aux factures
-            </a>
+            </Link>
             <DeleteFactureButton invoiceId={id} />
           </div>
 
@@ -107,22 +108,22 @@ export default async function FactureDetailPage({
                 </div>
                 <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
                   {pdfSignedUrl && (
-                    <a href={pdfSignedUrl} target="_blank" rel="noopener noreferrer" style={{
+                    <Link href={pdfSignedUrl} target="_blank" rel="noopener noreferrer" style={{
                       background: "#E85A00", color: "white", textDecoration: "none",
                       fontSize: "13px", fontWeight: "700", padding: "8px 16px", borderRadius: "8px",
                       display: "inline-flex", alignItems: "center", gap: "6px",
                     }}>
                       📄 Voir le PDF original
-                    </a>
+                    </Link>
                   )}
                   {invoice.status === "checked" ? (
-                    <a href={"/factures/" + id + "/resultat"} style={{
+                    <Link href={"/factures/" + id + "/resultat"} style={{
                       background: "#16A34A", color: "white", textDecoration: "none",
                       fontSize: "13px", fontWeight: "700", padding: "8px 16px", borderRadius: "8px",
                       display: "inline-flex", alignItems: "center", gap: "6px",
                     }}>
                       📊 Voir le résultat
-                    </a>
+                    </Link>
                   ) : null}
                   <ControlerButton invoiceId={id} />
                 </div>
@@ -165,7 +166,7 @@ export default async function FactureDetailPage({
                 >
                   ✅ Enregistrer
                 </button>
-                <a
+                <Link
                   href="/fournisseurs"
                   style={{
                     background: "white", color: "#6B7280", border: "1px solid #E5E7EB",
@@ -174,7 +175,7 @@ export default async function FactureDetailPage({
                   }}
                 >
                   Annuler
-                </a>
+                </Link>
               </form>
             </div>
           )}

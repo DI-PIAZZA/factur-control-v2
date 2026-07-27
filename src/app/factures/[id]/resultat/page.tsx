@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import MailAvoirModal from "./MailAvoirModal";
 import HorsTarifActions from "./HorsTarifActions";
@@ -102,13 +103,13 @@ export default async function ResultatPage({
         {/* Retour */}
         <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap" }}>
           <RetourImportButton />
-          <a href={"/factures/" + id} style={{
+          <Link href={"/factures/" + id} style={{
             display: "inline-flex", alignItems: "center", gap: "8px",
             background: "#1F2937", color: "white", textDecoration: "none",
             fontSize: "14px", fontWeight: "600", padding: "8px 16px", borderRadius: "8px",
           }}>
             📄 Voir la facture
-          </a>
+          </Link>
         </div>
 
         {/* Header */}
@@ -137,22 +138,22 @@ export default async function ResultatPage({
             <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "12px" }}>
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end" }}>
                 {pdfSignedUrl && (
-                  <a href={pdfSignedUrl} target="_blank" rel="noopener noreferrer" style={{
+                  <Link href={pdfSignedUrl} target="_blank" rel="noopener noreferrer" style={{
                     display: "inline-flex", alignItems: "center", gap: "6px",
                     background: "#E85A00", color: "white", textDecoration: "none",
                     fontSize: "13px", fontWeight: "600", padding: "8px 14px", borderRadius: "8px",
                   }}>
                     📄 Voir le PDF original
-                  </a>
+                  </Link>
                 )}
-                <a href={"/factures/" + id} style={{
+                <Link href={"/factures/" + id} style={{
                   display: "inline-flex", alignItems: "center", gap: "6px",
                   background: "#EFF6FF", color: "#1D4ED8", textDecoration: "none",
                   fontSize: "13px", fontWeight: "600", padding: "8px 14px", borderRadius: "8px",
                   border: "1px solid #BFDBFE",
                 }}>
                   📋 Voir la facture initiale
-                </a>
+                </Link>
               </div>
               {nbEcarts === 0 && nbHorsTarif === 0 ? (
                 <span style={{ background: "#F0FDF4", color: "#16A34A", fontSize: "15px", fontWeight: "700", padding: "8px 20px", borderRadius: "24px", border: "1px solid #86EFAC" }}>
