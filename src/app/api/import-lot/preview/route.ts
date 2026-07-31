@@ -74,7 +74,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `PDF "${nomPdf}" non trouvé dans l'archive` }, { status: 404 });
     }
 
-    return new Response(pdfBuffer, {
+    const uint8View = new Uint8Array(pdfBuffer.buffer, pdfBuffer.byteOffset, pdfBuffer.byteLength);
+    return new Response(uint8View, {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
