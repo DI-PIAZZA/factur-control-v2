@@ -57,6 +57,16 @@ export default async function FacturesPage({
               📦 Import en lot
             </Link>
             <Link
+              href="/factures/autoriser-fournisseurs"
+              style={{
+                background: "#4338CA", color: "white", padding: "10px 20px",
+                borderRadius: "8px", fontSize: "14px", fontWeight: "600",
+                textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px",
+              }}
+            >
+              🔗 E-Facturation
+            </Link>
+            <Link
               href="/factures/nouvelle"
               style={{
                 background: "#E85A00", color: "white", padding: "10px 20px",
