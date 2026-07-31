@@ -30,12 +30,14 @@ export default async function AutoriseFournisseursPage({
     .order("created_at", { ascending: false });
 
   // Récupérer les credentials e-invoice
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: credentials } = await supabase
     .from("e_invoice_credentials")
     .select("supplier_id, platform")
-    .in("supplier_id", suppliers?.map((s) => s.id) ?? []);
+    .in("supplier_id", suppliers?.map((s: any) => s.id) ?? []);
 
-  const credentialsBySupplier: Record<string, string[]> = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const credentialsBySupplier: Record<string, any> = {};
   for (const cred of credentials ?? []) {
     if (!credentialsBySupplier[cred.supplier_id]) {
       credentialsBySupplier[cred.supplier_id] = [];
@@ -66,7 +68,7 @@ export default async function AutoriseFournisseursPage({
             Autoriser la récupération de factures
           </h1>
           <p style={{ fontSize: "14px", color: "#6B7280" }}>
-            Autorisez chaque fournisseur pour que nous récupérions automatiquement ses factures d'achat via la facturation électronique.
+            Autorisez chaque fournisseur pour que nous récupérions automatiquement ses factures d&#39;achat via la facturation électronique.
           </p>
         </div>
 
