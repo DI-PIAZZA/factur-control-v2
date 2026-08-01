@@ -74,15 +74,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `PDF "${nomPdf}" non trouvé dans l'archive` }, { status: 404 });
     }
 
-    const uint8View = new Uint8Array(pdfBuffer.buffer, pdfBuffer.byteOffset, pdfBuffer.byteLength);
-    return new Response(uint8View, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Length": String(pdfBuffer.length),
-        "Content-Disposition": `inline; filename="${nomPdf}"`,
-      },
-    });
+    const base64 = pdfBuffer.toString('base64');
+    return NextResponse.json({ preview_b64: base64 });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
